@@ -35,24 +35,42 @@ app.get("/", async (req, res) => {
   });
 });
 
-app.post("/add", (req, res) => {
+app.post("/add", async (req, res) => {
   const item = req.body.newItem;
   items.push({ title: item });
-  db.query("INSERT INTO items (title) VALUES ($1)", [item]);
-  res.redirect("/");
+  try {
+    await db.query("INSERT INTO items (title) VALUES ($1)", [item]);
+    res.redirect("/");
+  }
+  catch(err){
+    console.log(err);
+  }
+
 });
 
-app.post("/edit", (req, res) => {
+app.post("/edit", async (req, res) => {
   const itemId = req.body.updatedItemId;
   const itemTitle = req.body.updatedItemTitle;
-  db.query("UPDATE items SET title = $1 WHERE id = $2", [itemTitle, itemId]);
-  res.redirect('/');
+  try {
+    await db.query("UPDATE items SET title = $1 WHERE id = $2", [itemTitle, itemId]);
+    res.redirect('/');
+  }
+  catch(err){
+    console.log(err);
+  }
+  
 });
 
-app.post("/delete", (req, res) => {
+app.post("/delete", async (req, res) => {
   const itemId = req.body.deleteItemId;
-  db.query("DELETE FROM items WHERE id = $1", [itemId]);
-  res.redirect('/');
+  
+  try {
+    await db.query("DELETE FROM items WHERE id = $1", [itemId]);
+    res.redirect('/');
+  }
+  catch(err){
+    console.log(err);
+  }
 });
 
 app.listen(port, () => {
